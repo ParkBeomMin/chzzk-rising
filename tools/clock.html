@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>시계 오버레이</title>
+<style>
+  * { margin:0; padding:0; }
+  html, body { background:transparent; height:100%; display:flex; align-items:center; justify-content:center; }
+  #clock { font-family:'Pretendard',sans-serif; font-weight:800; }
+</style>
+</head>
+<body>
+<div id="clock">--:--:--</div>
+<script>
+// URL 파라미터: ?size=80&color=%2300ffa3&bg=transparent
+const q = new URLSearchParams(location.search);
+const el = document.getElementById('clock');
+el.style.fontSize = (q.get('size') || 80) + 'px';
+el.style.color = q.get('color') || '#ffffff';
+if (q.get('stroke')) el.style.webkitTextStroke = `2px ${q.get('stroke')}`;
+function tick() {
+  const d = new Date();
+  el.textContent = [d.getHours(), d.getMinutes(), d.getSeconds()]
+    .map(n => String(n).padStart(2,'0')).join(':');
+}
+tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
