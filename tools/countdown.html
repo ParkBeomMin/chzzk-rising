@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>카운트다운 오버레이</title>
+<style>
+  * { margin:0; padding:0; }
+  html, body { background:transparent; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Pretendard',sans-serif; }
+  #msg { font-size:40px; color:#fff; margin-bottom:12px; font-weight:600; }
+  #timer { font-size:120px; font-weight:800; color:#00ffa3; }
+  #timer.done { color:#fff; }
+</style>
+</head>
+<body>
+<div id="msg"></div>
+<div id="timer">--:--</div>
+<script>
+// URL 파라미터: ?min=10&msg=곧 시작합니다&color=%2300ffa3&size=120
+const q = new URLSearchParams(location.search);
+const total = (parseInt(q.get('min')) || 10) * 60;
+document.getElementById('msg').textContent = q.get('msg') || '잠시 후 시작합니다';
+const el = document.getElementById('timer');
+el.style.fontSize = (q.get('size') || 120) + 'px';
+el.style.color = q.get('color') || '#00ffa3';
+const end = Date.now() + total * 1000;
+function tick() {
+  let s = Math.max(0, Math.round((end - Date.now()) / 1000));
+  const m = String(Math.floor(s/60)).padStart(2,'0'), ss = String(s%60).padStart(2,'0');
+  el.textContent = `${m}:${ss}`;
+  if (s === 0) { el.textContent = '시작!'; el.classList.add('done'); clearInterval(iv); }
+}
+tick(); const iv = setInterval(tick, 500);
+</script>
+</body>
+</html>
