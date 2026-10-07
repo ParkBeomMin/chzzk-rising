@@ -1,0 +1,39 @@
+name: 치지직 데이터 수집
+
+on:
+  schedule:
+    # 매시간 정각에 실행 (KST 기준 매시간)
+    - cron: '0 * * * *'
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 스냅샷 수집
+        run: python3 collector/collector.py
+
+      - name: 이전 스냅샷과 비교해 라이징 계산
+        run: |
+          # 가장 최근 2개 스냅샷 찾기
+          SNAPS=($(ls -t data/snapshot_*.json | head -2))
+          if [ ${#SNAPS[@]} -eq 2 ]; then
+            python3 collector/rising.py "${SNAPS[1]}" "${SNAPS[0]}" -o data/rising.json
+          fi
+
+      - name: 변경사항 커밋
+        run: |
+          git config user.name "chzzk-rising-bot"
+          git config user.email "bot@example.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "데이터 업데이트 $(date +'%Y-%m-%d %H:%M')"
+          git push
