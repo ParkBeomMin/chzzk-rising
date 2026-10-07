@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svgfavicon.svg">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>내 방송 통계 - 치지직 나침반</title>
 <meta name="description" content="내 치지직 방송의 시청자 수 추이를 확인하세요.">
@@ -79,7 +79,7 @@
      data-full-width-responsive="true"></ins></div>
   <div id="hint" class="empty">채널명을 검색하면<br>48시간 시청자 추이를 보여줘요</div>
 </div>
-<footer>데이터: 치지직 공개 API · 30분마다 갱신<br>© 치지직 나침반</footer>
+<footer>데이터: 치지직 공개 API · 10분마다 갱신<br>© 치지직 나침반</footer>
 <script>
 let HIST = {}, cur = null;
 fetch('data/channel_history.json').then(r => r.json()).then(d => { HIST = d; });
