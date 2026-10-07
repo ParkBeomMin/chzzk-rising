@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 방송 통계 - 치지직 나침반</title>
+<meta name="description" content="내 치지직 방송의 시청자 수 추이를 확인하세요.">
+<style>
+  :root { --bg:#0f0f13; --card:#1a1a22; --accent:#00ffa3; --text:#f0f0f0; --muted:#888; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif; }
+  header { padding:20px 16px 12px; text-align:center; border-bottom:1px solid #222; }
+  header h1 { font-size:20px; } header h1 span { color:var(--accent); }
+  header p { color:var(--muted); font-size:13px; margin-top:6px; }
+  nav { display:flex; justify-content:center; gap:8px; padding:12px; }
+  nav a { color:var(--muted); text-decoration:none; font-size:14px; padding:8px 16px; border-radius:20px; background:var(--card); }
+  nav a.active { color:#000; background:var(--accent); font-weight:bold; }
+  #wrap { max-width:720px; margin:0 auto; padding:16px; }
+  #search { width:100%; padding:14px; font-size:16px; border-radius:12px; border:1px solid #333; background:var(--card); color:var(--text); }
+  #results { margin-top:8px; }
+  .ch { display:flex; align-items:center; gap:12px; padding:10px; background:var(--card); border-radius:10px; margin-bottom:8px; cursor:pointer; }
+  .ch img { width:44px; height:44px; border-radius:50%; background:#222; }
+  .ch .nm { font-weight:600; }
+  #chart-wrap { margin-top:16px; background:var(--card); border-radius:12px; padding:16px; display:none; }
+  #chart-wrap h2 { font-size:16px; margin-bottom:4px; }
+  #chart-wrap .sub { color:var(--muted); font-size:12px; margin-bottom:12px; }
+  canvas { width:100%; height:240px; }
+  .stat-row { display:flex; gap:8px; margin-top:12px; }
+  .stat { flex:1; background:#222; border-radius:10px; padding:10px; text-align:center; }
+  .stat .v { font-size:18px; font-weight:800; color:var(--accent); }
+  .stat .k { font-size:11px; color:var(--muted); margin-top:2px; }
+  .share { margin-top:12px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:14px; font-weight:bold; cursor:pointer; }
+  .empty { text-align:center; color:var(--muted); padding:40px 0; font-size:14px; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 내 방송 <span>통계</span></h1>
+  <p>48시간 시청자 수 추이</p>
+</header>
+<nav>
+  <a href="index.html">🧭 나침반</a>
+  <a href="stats.html" class="active">📊 내 방송 통계</a>
+  <a href="tools/">🛠 도구</a>
+</nav>
+<div id="wrap">
+  <input id="search" placeholder="채널명 검색 (예: 랄로)" autocomplete="off">
+  <div id="results"></div>
+  <div id="chart-wrap">
+    <h2 id="ch-name"></h2>
+    <div class="sub" id="ch-sub"></div>
+    <canvas id="chart"></canvas>
+    <div class="stat-row">
+      <div class="stat"><div class="v" id="st-peak">-</div><div class="k">최고 시청자</div></div>
+      <div class="stat"><div class="v" id="st-avg">-</div><div class="k">평균 시청자</div></div>
+      <div class="stat"><div class="v" id="st-cur">-</div><div class="k">현재 시청자</div></div>
+    </div>
+    <button class="share" onclick="share()">📣 결과 공유하기</button>
+  </div>
+  <div id="hint" class="empty">채널명을 검색하면<br>48시간 시청자 추이를 보여줘요</div>
+</div>
+<footer>데이터: 치지직 공개 API · 30분마다 갱신<br>© 치지직 나침반</footer>
+<script>
+let HIST = {}, cur = null;
+fetch('data/channel_history.json').then(r => r.json()).then(d => { HIST = d; });
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.trim();
+  const box = document.getElementById('results');
+  if (!q) { box.innerHTML = ''; return; }
+  const hits = Object.entries(HIST).filter(([id, c]) => c.name.includes(q)).slice(0, 8);
+  box.innerHTML = hits.map(([id, c]) =>
+    `<div class="ch" onclick="select('${id}')">
+       <img src="${c.image}" onerror="this.style.display='none'">
+       <div class="nm">${esc(c.name)}</div>
+     </div>`).join('') || '<div class="empty">검색 결과 없음</div>';
+});
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function select(id) {
+  cur = { id, ...HIST[id] };
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('search').value = cur.name;
+  document.getElementById('hint').style.display = 'none';
+  const w = document.getElementById('chart-wrap');
+  w.style.display = 'block';
+  document.getElementById('ch-name').textContent = cur.name;
+  const pts = cur.points;
+  const vs = pts.map(p => p[1]);
+  const peak = Math.max(...vs), avg = Math.round(vs.reduce((a,b)=>a+b,0)/vs.length);
+  document.getElementById('st-peak').textContent = peak.toLocaleString();
+  document.getElementById('st-avg').textContent = avg.toLocaleString();
+  document.getElementById('st-cur').textContent = vs[vs.length-1].toLocaleString();
+  const first = new Date(pts[0][0]*1000), last = new Date(pts[pts.length-1][0]*1000);
+  document.getElementById('ch-sub').textContent =
+    `${first.toLocaleString('ko-KR')} ~ ${last.toLocaleString('ko-KR')}`;
+  draw(pts);
+}
+function draw(pts) {
+  const cv = document.getElementById('chart'), ctx = cv.getContext('2d');
+  const W = cv.width = cv.offsetWidth * 2, H = cv.height = 480;
+  ctx.clearRect(0,0,W,H);
+  const vs = pts.map(p=>p[1]), max = Math.max(...vs, 10);
+  const pad = 30*2;
+  ctx.strokeStyle = '#333'; ctx.fillStyle = '#888'; ctx.font = '20px sans-serif';
+  for (let i=0;i<=4;i++) {
+    const y = pad + (H-pad*2) * (1 - i/4);
+    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-10,y); ctx.stroke();
+    ctx.fillText(Math.round(max*i/4).toLocaleString(), 4, y+6);
+  }
+  // 영역
+  ctx.beginPath();
+  pts.forEach((p,i) => {
+    const x = pad + (W-pad-10) * i/(pts.length-1);
+    const y = pad + (H-pad*2) * (1 - p[1]/max);
+    i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+  });
+  ctx.strokeStyle = '#00ffa3'; ctx.lineWidth = 4; ctx.stroke();
+  ctx.lineTo(pad + (W-pad-10), H-pad); ctx.lineTo(pad, H-pad); ctx.closePath();
+  const g = ctx.createLinearGradient(0,pad,0,H-pad);
+  g.addColorStop(0,'rgba(0,255,163,0.35)'); g.addColorStop(1,'rgba(0,255,163,0)');
+  ctx.fillStyle = g; ctx.fill();
+}
+function share() {
+  if (!cur) return;
+  const peak = document.getElementById('st-peak').textContent;
+  const t = `📊 내 방송 통계 (48시간)\n채널: ${cur.name}\n최고 시청자: ${peak}명\n\n치지직 나침반에서 확인👇\nhttps://parkbeommin.github.io/chzzk-rising/stats.html`;
+  if (navigator.share) navigator.share({ text: t }).catch(()=>{});
+  else { navigator.clipboard.writeText(t); alert('복사됐어요!'); }
+}
+</script>
+</body>
+</html>
