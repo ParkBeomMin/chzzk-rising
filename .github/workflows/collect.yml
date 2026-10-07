@@ -2,8 +2,8 @@ name: 치지직 데이터 수집
 
 on:
   schedule:
-    # 매시간 정각에 실행 (KST 기준 매시간)
-    - cron: '0 * * * *'
+    # 30분마다 실행 (KST 기준 매시 0분/30분)
+    - cron: '*/30 * * * *'
   workflow_dispatch:  # 수동 실행 가능
 
 jobs:
