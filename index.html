@@ -187,10 +187,18 @@ function render(){
   let items = [];
   if (curTab === 'rising' && RISING && RISING.ranking.length) {
     items = RISING.ranking.filter(l => (curCat==='전체' || l.category===curCat) && matchQ(l));
-    el.innerHTML = items.length
-      ? items.slice(0,50).map((l,i)=>card(l,i,l.growthPct)).join('')
-      : (curQ ? '<div class="empty">검색 결과가 없습니다.</div>'
+    if (items.length) {
+      let html = '';
+      items.slice(0,50).forEach((l,i)=>{
+        html += card(l,i,l.growthPct);
+        if ((i+1)%10===0) html += '<div class="ad-slot">' + adUnit() + '</div>';
+      });
+      el.innerHTML = html;
+      pushAds();
+    } else {
+      el.innerHTML = (curQ ? '<div class="empty">검색 결과가 없습니다.</div>'
                : '<div class="empty">아직 라이징 데이터가 쌓이는 중입니다.<br>곧 업데이트됩니다.</div>');
+    }
   } else {
     items = (DATA.lives||[]).filter(l => (curCat==='전체' || l.category===curCat) && matchQ(l));
     let html = '';
