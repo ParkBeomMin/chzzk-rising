@@ -30,6 +30,8 @@ function tick() {
   if (s === 0) { el.textContent = '시작!'; el.classList.add('done'); clearInterval(iv); }
 }
 tick(); const iv = setInterval(tick, 500);
+// 사용 횟수 기록
+fetch('https://abacus.jasoncameron.dev/hit/chzzk-compass/countdown').catch(()=>{});
 </script>
 </body>
 </html>
