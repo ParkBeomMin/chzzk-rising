@@ -83,7 +83,7 @@ function showTab(t){
 }
 function fmt(n){ return n>=10000 ? (n/10000).toFixed(1)+'만' : n.toLocaleString(); }
 function card(l, i, growth){
-  return `<a class="card" href="https://chzzk.naver.com/live/${l.channelId}" target="_blank" rel="noopener">
+  return `<a class="card" href="https://chzzk.naver.com/${l.channelId}" target="_blank" rel="noopener">
     ${i!=null?`<div class="rank">${i+1}</div>`:''}
     <img class="thumb" src="${l.thumbnail}" loading="lazy" onerror="this.style.display='none'">
     <div class="info">
