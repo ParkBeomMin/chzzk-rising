@@ -14,7 +14,7 @@ from datetime import datetime
 
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else "../frontend/data/rising.json"
-    site_url = "https://parkbeommin.github.io/chzzk-rising/"
+    site_url = "https://chzzk.duckmu.com/"
     for i, a in enumerate(sys.argv):
         if a == "--site-url" and i + 1 < len(sys.argv):
             site_url = sys.argv[i + 1]
