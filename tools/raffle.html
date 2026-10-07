@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svgfavicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>추첨기 - 치지직 나침반 도구</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<style>
+  .ic { width:1.15em; height:1.15em; vertical-align:-0.2em; }
+  .ic.sm { width:1em; height:1em; vertical-align:-0.12em; }
+
+  :root { --bg:#0f0f13; --card:#1a1a22; --accent:#00ffa3; --text:#f0f0f0; --muted:#888; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif; }
+  body.overlay { background:transparent; }
+  body.overlay .no-overlay { display:none; }
+  header { padding:20px 16px 12px; text-align:center; border-bottom:1px solid #222; }
+  header h1 { font-size:20px; } header h1 span { color:var(--accent); }
+  #wrap { max-width:720px; margin:0 auto; padding:16px; }
+  textarea { width:100%; height:140px; padding:12px; font-size:14px; border-radius:12px; border:1px solid #333; background:var(--card); color:var(--text); resize:vertical; }
+  .row { display:flex; gap:8px; margin-top:12px; }
+  .row input { flex:1; padding:12px; font-size:14px; border-radius:10px; border:1px solid #333; background:var(--card); color:var(--text); width:60px; }
+  button.big { flex:2; padding:14px; font-size:16px; font-weight:800; border-radius:12px; border:none; background:var(--accent); color:#000; cursor:pointer; }
+  button.ghost { padding:12px; font-size:14px; border-radius:10px; border:1px solid #444; background:transparent; color:var(--muted); cursor:pointer; }
+  #stage { margin-top:20px; text-align:center; min-height:120px; }
+  #winner { font-size:42px; font-weight:800; color:var(--accent); min-height:60px; }
+  #winner-list { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .w { background:#00331f; color:var(--accent); border-radius:20px; padding:8px 16px; font-size:14px; font-weight:600; }
+  label.chk { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); margin-top:12px; cursor:pointer; }
+  .cnt { font-size:13px; color:var(--muted); margin-top:8px; }
+  .back { display:block; text-align:center; color:var(--muted); font-size:14px; margin-top:24px; text-decoration:none; }
+  /* 오버레이 모드 */
+  #ov { display:none; height:100vh; align-items:center; justify-content:center; flex-direction:column; }
+  body.overlay #ov { display:flex; }
+  #ov-winner { font-size:90px; font-weight:800; color:#fff; text-shadow:0 0 30px var(--accent); }
+  #ov-label { font-size:28px; color:var(--accent); margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div id="ov" class="no-overlay-false">
+  <div id="ov-label">당첨자</div>
+  <div id="ov-winner">대기 중</div>
+</div>
+
+<header class="no-overlay">
+  <h1><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> 추첨기 <span>도구</span></h1>
+</header>
+<div id="wrap" class="no-overlay">
+  <textarea id="names" placeholder="참가자 이름을 한 줄에 하나씩 입력&#10;예)&#10;철수&#10;영희&#10;민수"></textarea>
+  <div class="cnt" id="cnt"></div>
+  <div class="row">
+    <input id="pickN" type="number" value="1" min="1" max="100" title="뽑을 인원">
+    <button class="big" onclick="draw()">추첨하기</button>
+    <button class="ghost" onclick="resetAll()">초기화</button>
+  </div>
+  <label class="chk"><input type="checkbox" id="exclude" checked> 당첨자는 다음 추첨에서 제외</label>
+  <div id="stage">
+    <div id="winner"></div>
+    <div id="winner-list"></div>
+  </div>
+  <a class="back" href="./">← 도구 목록으로</a>
+</div>
+
+<script>
+const q = new URLSearchParams(location.search);
+if (q.get('overlay') === '1') document.body.classList.add('overlay');
+
+const ta = document.getElementById('names');
+const cnt = document.getElementById('cnt');
+let winners = new Set();
+
+ta.addEventListener('input', () => {
+  const n = ta.value.split('\n').map(s=>s.trim()).filter(Boolean).length;
+  cnt.textContent = `참가자 ${n}명`;
+});
+if (q.get('names')) ta.value = decodeURIComponent(q.get('names')).replace(/,/g, '\n');
+
+function pool() {
+  const all = ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const ex = document.getElementById('exclude').checked;
+  return ex ? all.filter(n => !winners.has(n)) : all;
+}
+function draw() {
+  const p = pool();
+  const n = Math.min(parseInt(document.getElementById('pickN').value) || 1, p.length);
+  if (!p.length) { alert('참가자를 입력하세요'); return; }
+  const wEl = document.getElementById('winner');
+  const ovW = document.getElementById('ov-winner');
+  // 룰렛 애니메이션
+  let i = 0;
+  const iv = setInterval(() => {
+    const r = p[Math.floor(Math.random()*p.length)];
+    wEl.textContent = r; ovW.textContent = r;
+    if (++i > 20) {
+      clearInterval(iv);
+      const picked = [];
+      const cp = [...p];
+      for (let k=0;k<n;k++) {
+        const idx = Math.floor(Math.random()*cp.length);
+        picked.push(cp.splice(idx,1)[0]);
+      }
+      picked.forEach(x => winners.add(x));
+      wEl.textContent = picked.length === 1 ? picked[0] : '';
+      ovW.textContent = picked.length === 1 ? picked[0] : picked.join(', ');
+      document.getElementById('winner-list').innerHTML =
+        picked.map(x=>`<span class="w">${esc(x)}</span>`).join('');
+    }
+  }, 70);
+}
+function resetAll() { winners.clear(); document.getElementById('winner').textContent=''; document.getElementById('winner-list').innerHTML=''; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+// 사용 횟수 기록
+fetch('https://abacus.jasoncameron.dev/hit/chzzk-compass/raffle').catch(()=>{});
+</script>
+</body>
+</html>
