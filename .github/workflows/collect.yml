@@ -29,6 +29,8 @@ jobs:
           if [ ${#SNAPS[@]} -eq 2 ]; then
             python3 collector/rising.py "${SNAPS[1]}" "${SNAPS[0]}" -o data/rising.json
           fi
+          # 채널별 히스토리 집계 (내 방송 통계용)
+          python3 collector/build_history.py
 
       - name: 변경사항 커밋
         run: |
