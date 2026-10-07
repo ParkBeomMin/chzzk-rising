@@ -127,7 +127,7 @@ function draw(pts) {
 function share() {
   if (!cur) return;
   const peak = document.getElementById('st-peak').textContent;
-  const t = `📊 내 방송 통계 (48시간)\n채널: ${cur.name}\n최고 시청자: ${peak}명\n\n치지직 나침반에서 확인👇\nhttps://parkbeommin.github.io/chzzk-rising/stats.html`;
+  const t = `📊 내 방송 통계 (48시간)\n채널: ${cur.name}\n최고 시청자: ${peak}명\n\n치지직 나침반에서 확인👇\nhttps://chzzk.duckmu.com/stats.html`;
   if (navigator.share) navigator.share({ text: t }).catch(()=>{});
   else { navigator.clipboard.writeText(t); alert('복사됐어요!'); }
 }
