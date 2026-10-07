@@ -40,7 +40,8 @@
   .card .viewers { color:var(--accent); font-weight:bold; }
   .rank { font-size:20px; font-weight:800; color:var(--accent); min-width:32px; text-align:center; align-self:center; }
   .growth { display:inline-block; background:#00331f; color:var(--accent); font-size:12px; font-weight:bold; border-radius:6px; padding:2px 8px; margin-top:4px; }
-  .ad-slot { background:var(--card); border-radius:12px; margin:12px 0; overflow:hidden; }
+  .ad-slot { margin:16px 4px; overflow:hidden; opacity:0.95; }
+  .ad-slot .ad-label { font-size:10px; color:var(--muted); text-align:center; margin-bottom:4px; letter-spacing:1px; }
   footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
   .empty { text-align:center; color:var(--muted); padding:40px 0; }
   #tabRandom { border-color:var(--accent); color:var(--accent); }
@@ -154,7 +155,7 @@ function card(l, i, growth){
     </div></a>`;
 }
 function adUnit(){
-  return `<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-7426857657290789" data-ad-slot="9331663673"></ins>`;
+  return `<div class="ad-label">광고</div><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-7426857657290789" data-ad-slot="9331663673"></ins>`;
 }
 function pushAds(){
   document.querySelectorAll('#list ins.adsbygoogle:not([data-ad-status])').forEach(() => {
