@@ -36,10 +36,11 @@
   .card .viewers { color:var(--accent); font-weight:bold; }
   .rank { font-size:20px; font-weight:800; color:var(--accent); min-width:32px; text-align:center; align-self:center; }
   .growth { display:inline-block; background:#00331f; color:var(--accent); font-size:12px; font-weight:bold; border-radius:6px; padding:2px 8px; margin-top:4px; }
-  .ad-slot { background:#15151c; border:1px dashed #333; border-radius:12px; text-align:center; color:var(--muted); font-size:12px; padding:24px; margin:12px 0; }
+  .ad-slot { background:var(--card); border-radius:12px; margin:12px 0; overflow:hidden; }
   footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
   .empty { text-align:center; color:var(--muted); padding:40px 0; }
 </style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7426857657290789" crossorigin="anonymous"></script>
 </head>
 <body>
 <header>
@@ -104,6 +105,14 @@ function card(l, i, growth){
       ${growth?`<div><span class="growth">${growth}</span></div>`:''}
     </div></a>`;
 }
+function adUnit(){
+  return `<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-7426857657290789" data-ad-slot="9331663673"></ins>`;
+}
+function pushAds(){
+  document.querySelectorAll('#list ins.adsbygoogle:not([data-ad-status])').forEach(() => {
+    try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
+  });
+}
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function render(){
   const el = document.getElementById('list');
@@ -118,9 +127,10 @@ function render(){
     let html = '';
     items.slice(0,60).forEach((l,i)=>{
       html += card(l, curCat==='전체'?i:null);
-      if ((i+1)%10===0) html += '<div class="ad-slot">광고 영역 (AdSense)</div>';
+      if ((i+1)%10===0) html += '<div class="ad-slot">' + adUnit() + '</div>';
     });
     el.innerHTML = html || '<div class="empty">방송이 없습니다.</div>';
+    pushAds();
   }
 }
 load();
