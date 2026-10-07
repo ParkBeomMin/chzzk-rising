@@ -14,6 +14,9 @@
   header h1 span { color:var(--accent); }
   header p { color:var(--muted); font-size:13px; margin-top:6px; }
   .updated { text-align:center; color:var(--muted); font-size:12px; padding:8px; }
+  nav { display:flex; justify-content:center; gap:8px; padding:4px 12px 0; }
+  nav a { color:var(--muted); text-decoration:none; font-size:13px; padding:6px 14px; border-radius:16px; background:var(--card); }
+  nav a.active { color:#000; background:var(--accent); font-weight:bold; }
   .tabs { display:flex; justify-content:center; gap:8px; padding:12px; position:sticky; top:0; background:var(--bg); z-index:10; }
   .tabs button { background:var(--card); color:var(--text); border:1px solid #333; border-radius:20px; padding:8px 18px; font-size:14px; cursor:pointer; }
   .tabs button.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:bold; }
@@ -40,6 +43,11 @@
   <p>지금 급상승 중인 방송을 찾아보세요</p>
 </header>
 <div class="updated" id="updatedAt">로딩 중...</div>
+<nav>
+  <a href="index.html" class="active">🧭 나침반</a>
+  <a href="stats.html">📊 내 방송 통계</a>
+  <a href="tools/">🛠 도구</a>
+</nav>
 <div class="tabs">
   <button id="tabRising" class="active" onclick="showTab('rising')">🔥 라이징</button>
   <button id="tabLive" onclick="showTab('live')">📡 실시간 전체</button>
