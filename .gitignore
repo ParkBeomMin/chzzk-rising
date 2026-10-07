@@ -1,0 +1,3 @@
+# 원본 스냅샷은 git에 커밋하지 않음 (용량 관리)
+# latest.json / rising.json / channel_history.json 만 배포됨
+data/snapshot_*.json
