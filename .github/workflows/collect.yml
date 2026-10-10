@@ -31,11 +31,20 @@ jobs:
           # 채널별 히스토리 증분 집계 (내 방송 통계용)
           python3 collector/build_history.py
 
-      - name: 변경사항 커밋
+      - name: 변경사항 커밋 (data 브랜치)
         run: |
           git config user.name "chzzk-rising-bot"
           git config user.email "bot@example.com"
           # 스냅샷 원본은 커밋하지 않음 (.gitignore)
           git add data/latest.json data/rising.json data/channel_history.json
-          git diff --staged --quiet || git commit -m "데이터 업데이트 $(date +'%Y-%m-%d %H:%M')"
-          git push
+          git diff --staged --quiet && echo "변경 없음" && exit 0
+          git commit -m "데이터 업데이트 $(date +'%Y-%m-%d %H:%M')"
+          # data 브랜치에만 푸시 → main 변경 없으므로 Vercel 재배포 없음
+          git push origin HEAD:refs/heads/data
+
+      - name: jsDelivr 캐시 퍼지
+        run: |
+          for f in rising.json latest.json channel_history.json; do
+            curl -s "https://purge.jsdelivr.net/gh/ParkBeomMin/chzzk-rising@data/data/$f" > /dev/null
+          done
+          echo "jsDelivr purge done"
