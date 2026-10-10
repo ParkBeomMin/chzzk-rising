@@ -43,9 +43,3 @@ jobs:
           # --force: main에 코드 푸시되면 data 브랜치와 분기되므로 매번 강제 동기화
           git push --force origin HEAD:refs/heads/data
 
-      - name: jsDelivr 캐시 퍼지
-        run: |
-          for f in rising.json latest.json channel_history.json; do
-            curl -s "https://purge.jsdelivr.net/gh/ParkBeomMin/chzzk-rising@data/data/$f" > /dev/null
-          done
-          echo "jsDelivr purge done"
