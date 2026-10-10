@@ -39,10 +39,8 @@ jobs:
           git add data/latest.json data/rising.json data/channel_history.json
           git diff --staged --quiet && echo "변경 없음" && exit 0
           git commit -m "데이터 업데이트 $(date +'%Y-%m-%d %H:%M')"
-          # data 브랜치에 푸시 (Vercel 재배포 없음)
+          # data 브랜치에만 푸시 → main 변경 없으므로 Vercel 재배포 없음
           git push origin HEAD:refs/heads/data
-          # TEMP: Vercel 웹훅 복구 전까지 main에도 푸시 (구 HTML 호환용)
-          git push origin HEAD:refs/heads/main
 
       - name: jsDelivr 캐시 퍼지
         run: |
