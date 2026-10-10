@@ -93,7 +93,7 @@
 <footer>데이터: 치지직 공개 API · 20분마다 갱신<br>© 치지직 나침반</footer>
 <script>
 let HIST = {}, cur = null;
-fetch('https://cdn.jsdelivr.net/gh/ParkBeomMin/chzzk-rising@data/data/channel_history.json').then(r => r.json()).then(d => { HIST = d; });
+fetch('https://raw.githubusercontent.com/ParkBeomMin/chzzk-rising/data/data/channel_history.json').then(r => r.json()).then(d => { HIST = d; });
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.trim();
   const box = document.getElementById('results');
