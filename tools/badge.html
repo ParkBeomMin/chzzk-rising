@@ -32,7 +32,7 @@
 const q = new URLSearchParams(location.search);
 const cid = q.get('channel');
 if (cid) {
-  fetch('https://cdn.jsdelivr.net/gh/ParkBeomMin/chzzk-rising@data/data/rising.json').then(r => r.json()).then(d => {
+  fetch('https://raw.githubusercontent.com/ParkBeomMin/chzzk-rising/data/data/rising.json').then(r => r.json()).then(d => {
     const i = d.ranking.findIndex(x => x.channelId === cid);
     if (i >= 0 && i < 100) {
       document.getElementById('rank').textContent = (i+1) + '위';
