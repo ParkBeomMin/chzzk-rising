@@ -148,9 +148,10 @@ function matchQ(l){
 
 async function load() {
   try {
+    const DATA_BASE = 'https://cdn.jsdelivr.net/gh/ParkBeomMin/chzzk-rising@data/data';
     const [d, r] = await Promise.all([
-      fetch('data/latest.json').then(x => x.json()),
-      fetch('data/rising.json').then(x => x.json()).catch(() => null)
+      fetch(DATA_BASE + '/latest.json').then(x => x.json()),
+      fetch(DATA_BASE + '/rising.json').then(x => x.json()).catch(() => null)
     ]);
     DATA = d; RISING = r;
     document.getElementById('updatedAt').textContent =
