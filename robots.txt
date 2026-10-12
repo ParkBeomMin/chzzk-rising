@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
 Sitemap: https://chzzk.duckmu.com/sitemap.xml
+# last-verified: 2026-10-12 daily review
