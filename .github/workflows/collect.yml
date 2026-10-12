@@ -44,12 +44,3 @@ jobs:
           # data 브랜치에만 푸시 → main 변경 없으므로 Vercel 재배포 없음
           # --force: main에 코드 푸시되면 data 브랜치와 분기되므로 매번 강제 동기화
           git push --force origin HEAD:refs/heads/data
-
-      - name: jsDelivr 캐시 퍼지 (임시)
-        # 라이브 사이트(chzzk.duckmu.com)가 아직 jsDelivr에서 데이터를 읽고 있음.
-        # Vercel 재배포(raw.githubusercontent 전환 코드 반영) 전까지 데이터 신선도 유지용. 재배포 후 이 스텝 제거.
-        run: |
-          for f in rising.json latest.json channel_history.json; do
-            curl -s "https://purge.jsdelivr.net/gh/ParkBeomMin/chzzk-rising@data/data/$f" > /dev/null
-          done
-          echo "jsDelivr purge done"
