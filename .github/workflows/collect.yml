@@ -29,6 +29,9 @@ jobs:
 
       - name: 라이징 계산 및 히스토리 집계
         run: |
+          # data 브랜치의 누적 히스토리 복원 — checkout은 main 기준이라 히스토리 파일이 없어 매번 새로 시작되는 문제(2026-10-17 확인) 수정
+          git fetch origin data 2>/dev/null
+          git show origin/data:data/channel_history.json > data/channel_history.json 2>/dev/null || echo "{}" > data/channel_history.json
           python3 collector/rising.py /tmp/prev_latest.json data/latest.json -o data/rising.json
           # 채널별 히스토리 증분 집계 (내 방송 통계용)
           python3 collector/build_history.py
