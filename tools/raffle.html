@@ -76,6 +76,7 @@ if (q.get('overlay') === '1') document.body.classList.add('overlay');
 const ta = document.getElementById('names');
 const cnt = document.getElementById('cnt');
 let winners = new Set();
+let drawing = false; // 룰렛 애니메이션 중 중복 클릭 방지
 
 ta.addEventListener('input', () => {
   const n = ta.value.split('\n').map(s=>s.trim()).filter(Boolean).length;
@@ -89,9 +90,11 @@ function pool() {
   return ex ? all.filter(n => !winners.has(n)) : all;
 }
 function draw() {
+  if (drawing) return; // 애니메이션 중 재클릭 무시
   const p = pool();
   const n = Math.min(parseInt(document.getElementById('pickN').value) || 1, p.length);
   if (!p.length) { alert('참가자를 입력하세요'); return; }
+  drawing = true;
   const wEl = document.getElementById('winner');
   const ovW = document.getElementById('ov-winner');
   // 룰렛 애니메이션
@@ -101,6 +104,7 @@ function draw() {
     wEl.textContent = r; ovW.textContent = r;
     if (++i > 20) {
       clearInterval(iv);
+      drawing = false;
       const picked = [];
       const cp = [...p];
       for (let k=0;k<n;k++) {
