@@ -37,8 +37,19 @@ if (cid) {
     if (i >= 0 && i < 100) {
       document.getElementById('rank').textContent = (i+1) + '위';
       document.getElementById('badge').classList.add('show');
+    } else {
+      showHint('이 채널은 현재 라이징 100위 안에 없어요');
     }
-  }).catch(()=>{});
+  }).catch(()=>{ showHint('데이터를 불러오지 못했어요'); });
+} else {
+  showHint('라이징 뱃지 — 주소 뒤에 ?channel=채널ID 를 붙여 사용하세요');
+}
+// OBS 오버레이용 투명 배경을 해치지 않는 최소 안내 문구
+function showHint(msg) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#999;font-size:15px;text-align:center;padding:24px;line-height:1.6;background:transparent;';
+  el.textContent = msg;
+  document.body.appendChild(el);
 }
 // 사용 횟수 기록
 fetch('https://abacus.jasoncameron.dev/hit/chzzk-compass/badge').catch(()=>{});
