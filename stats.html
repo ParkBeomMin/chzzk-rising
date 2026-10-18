@@ -92,12 +92,26 @@
 </div>
 <footer>데이터: 치지직 공개 API · 20분마다 갱신<br>© 치지직 나침반</footer>
 <script>
-let HIST = {}, cur = null;
-fetch('https://raw.githubusercontent.com/ParkBeomMin/chzzk-rising/data/data/channel_history.json').then(r => r.json()).then(d => { HIST = d; });
+let HIST = null, cur = null;
+const DATA_URL = 'https://raw.githubusercontent.com/ParkBeomMin/chzzk-rising/data/data/channel_history.json';
+// 데이터 로딩: 실패 시 2초 간격으로 최대 3회 재시도, 전부 실패하면 재시도 버튼 표시
+function loadHist(retries) {
+  fetch(DATA_URL + '?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(d => { HIST = d; })
+    .catch(() => {
+      if (retries > 0) { setTimeout(() => loadHist(retries - 1), 2000); return; }
+      HIST = {};
+      document.getElementById('results').innerHTML =
+        '<div class="empty">데이터를 불러오지 못했어요<br><button class="share" onclick="location.reload()" style="margin-top:10px;width:auto;padding:10px 24px">다시 시도</button></div>';
+    });
+}
+loadHist(3);
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.trim();
   const box = document.getElementById('results');
   if (!q) { box.innerHTML = ''; return; }
+  if (HIST === null) { box.innerHTML = '<div class="empty">데이터 불러오는 중...</div>'; return; }
   const hits = Object.entries(HIST).filter(([id, c]) => c.name.includes(q)).slice(0, 8);
   box.innerHTML = hits.map(([id, c]) =>
     `<div class="ch" onclick="select('${id}')">
